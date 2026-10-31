@@ -8,10 +8,10 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="Scene"
         component={Scene}
-        durationInFrames={150}
+        durationInFrames={900} // 30 Seconds @ 30fps
         fps={30}
-        width={1280}
-        height={720}
+        width={1920}           // Full HD Width
+        height={1080}          // Full HD Height
       />
     </>
   );
