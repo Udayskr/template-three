@@ -14,10 +14,18 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Install Linux & Software 3D Dependencies
+      - name: Install Linux, 3D & Voice Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y xvfb libgl1-mesa-dri libegl1-mesa libgles2-mesa mesa-utils libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2 ffmpeg
+          sudo apt-get install -y python3-pip xvfb libgl1-mesa-dri libegl1-mesa libgles2-mesa mesa-utils libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2 ffmpeg
+          pip3 install edge-tts
+
+      - name: Generate AI Voiceovers from Script
+        run: |
+          mkdir -p public
+          edge-tts --voice en-US-ChristopherNeural --rate=+5% --text "Imagine waking up one day with ten times the speed of a normal human. One moment you say goodbye, the next, you vanish in a flash!" --write-media public/voice1.mp3
+          edge-tts --voice en-US-ChristopherNeural --rate=+5% --text "Scientists immediately put your speed to the test. Your legs move like an absolute blur, overheating the treadmill in seconds!" --write-media public/voice2.mp3
+          edge-tts --voice en-US-ChristopherNeural --rate=+5% --text "Out on the track, you cross the finish line before the coach even blinks. Super speed sounds amazing, until you try to stop!" --write-media public/voice3.mp3
 
       - name: Install NPM Packages
         run: npm install
