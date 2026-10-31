@@ -14,16 +14,16 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Install Linux Dependencies
+      - name: Install Linux & Software 3D Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2 ffmpeg
+          sudo apt-get install -y xvfb libgl1-mesa-dri libegl1-mesa libgles2-mesa mesa-utils libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2 ffmpeg
 
       - name: Install NPM Packages
         run: npm install
 
       - name: Render 3D Video with Remotion
-        run: npx remotion render src/index.ts Scene out/video.mp4 --gl=angle
+        run: xvfb-run -a npx remotion render src/index.ts Scene out/video.mp4 --gl=swangle
 
       - name: Upload Rendered MP4
         uses: actions/upload-artifact@v4
