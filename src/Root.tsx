@@ -1,57 +1,38 @@
-import { Composition, staticFile } from "remotion";
-import { Scene, myCompSchema } from "./Scene";
-import { getMediaMetadata } from "./helpers/get-media-metadata";
+name: Render 3D Video
 
-// Welcome to the Remotion Three Starter Kit!
-// Two compositions have been created, showing how to use
-// the `ThreeCanvas` component and the `useVideoTexture` hook.
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
 
-// You can play around with the example or delete everything inside the canvas.
+jobs:
+  render:
+    name: Render Video on Ubuntu
+    runs-on: ubuntu-22.04
 
-// Remotion Docs:
-// https://remotion.dev/docs
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-// @remotion/three Docs:
-// https://remotion.dev/docs/three
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-// React Three Fiber Docs:
-// https://docs.pmnd.rs/react-three-fiber/getting-started/introduction
+      - name: Install Linux Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2 ffmpeg
 
-export const RemotionRoot: React.FC = () => {
-  return (
-    <>
-      <Composition
-        id="Scene"
-        component={Scene}
-        fps={30}
-        durationInFrames={300}
-        width={1280}
-        height={720}
-        schema={myCompSchema}
-        defaultProps={{
-          deviceType: "phone",
-          phoneColor: "rgb(110, 152, 191)" as const,
-          baseScale: 1,
-          mediaMetadata: null,
-          videoSrc: null,
-        }}
-        calculateMetadata={async ({ props }) => {
-          const videoSrc =
-            props.deviceType === "phone"
-              ? staticFile("phone.mp4")
-              : staticFile("tablet.mp4");
+      - name: Install NPM Packages
+        run: npm install
 
-          const mediaMetadata = await getMediaMetadata(videoSrc);
+      - name: Render 3D Video with Remotion
+        run: npx remotion render src/index.ts Scene out/video.mp4 --gl=angle
 
-          return {
-            props: {
-              ...props,
-              mediaMetadata,
-              videoSrc,
-            },
-          };
-        }}
-      />
-    </>
-  );
-};
+      - name: Upload Rendered MP4
+        uses: actions/upload-artifact@v4
+        with:
+          name: rendered-3d-video
+          path: out/video.mp4
+
